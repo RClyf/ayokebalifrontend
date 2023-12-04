@@ -186,6 +186,8 @@ const AddItinerary = () => {
         searchQuery: '',
       }));
     }
+
+    console.log(formData)
     try {
       const response = await axios.post(
         'https://ayokebalitst.azurewebsites.net/itinerary',
