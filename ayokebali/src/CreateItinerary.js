@@ -43,7 +43,7 @@ const AddItinerary = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [formData, setFormData] = useState({
-      id: '',
+      id: 0,
       username: username,
       date: '',
       lama_kunjungan: '',
@@ -186,8 +186,7 @@ const AddItinerary = () => {
         searchQuery: '',
       }));
     }
-
-    console.log(formData)
+    
     try {
       const response = await axios.post(
         'https://ayokebalitst.azurewebsites.net/itinerary',
