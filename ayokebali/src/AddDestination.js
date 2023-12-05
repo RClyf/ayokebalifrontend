@@ -37,19 +37,19 @@ const NavLink = ({ children }) => (
   </Button>
 );
 
-const AddItinerary = () => {
+const AddDestination = () => {
     const username = sessionStorage.getItem('username');
     const storedToken1 = sessionStorage.getItem('token1');
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [formData, setFormData] = useState({
-      id: '',
-      username: username,
-      date: '',
-      lama_kunjungan: '',
-      accommodation: '',
-      destination: [],
-      estimasi_budget: 0,
+      destination_id: 0,
+      name: '',
+      category: '',
+      location: '',
+      latitude: 0.0,
+      longitude: 0.0,
+      perkiraan_biaya: 0,
     });
 
     
@@ -58,9 +58,9 @@ const AddItinerary = () => {
       return Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
     };
   
-    const isIdAvailable = async (itineraryId) => {
+    const isIdAvailable = async (destination_id) => {
       try {
-        const response = await axios.get(`https://ayokebalitst.azurewebsites.net/itinerary/${itineraryId}`, {
+        const response = await axios.get(`https://ayokebalitst.azurewebsites.net/destination/${destination_id}`, {
           headers: {
             Authorization: `Bearer ${storedToken1}`,
           },
@@ -83,7 +83,7 @@ const AddItinerary = () => {
   
         if (idAvailable) {
           setFormData((prevData) => ({
-            id: Number(randomId),
+            destination_id: Number(randomId),
             ...prevData,
           }));
           return;
@@ -94,35 +94,8 @@ const AddItinerary = () => {
       // Handle the failure case as needed for your application
     };
 
-  const [destinationsList, setDestinations] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Fungsi untuk mengacak array
-  const shuffleArray = (array) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
   useEffect(() => {
-    const fetchDestinations = async () => {
-      try {
-        const response = await axios.get('https://ayokebalitst.azurewebsites.net/destination', {
-          headers: {
-            Authorization: `Bearer ${storedToken1}`,
-          },
-        });
-        const shuffledDestinations = shuffleArray(response.data);
-        setDestinations(shuffledDestinations);
-      } catch (error) {
-        console.error('Error fetching destinations:', error);
-      }
-    };
-
-    fetchDestinations();
+    
   }, []); // Fetch destinasi hanya sekali saat komponen dimount
 
   const handleChange = (e) => {
@@ -132,44 +105,6 @@ const AddItinerary = () => {
       [name]: value,
     }));
   };
-
-  const handleDestinationChange = (e) => {
-    const { value } = e.target;
-    setSearchQuery(value);
-  };
-
-  const handleAddDestination = () => {
-    const destinationId = Number(searchQuery);
-    if (!isNaN(destinationId) && destinationId > 0) {
-      if (!formData.destination.includes(destinationId)) {
-        setFormData((prevData) => ({
-          ...prevData,
-          destination: [...prevData.destination, destinationId],
-        }));
-        setSearchQuery(''); // Clear the searchQuery after successfully adding the destination
-      } else {
-        alert('Destination sudah ada dalam itinerary.');
-        // Provide feedback if destinationId already exists
-      }
-    } else {
-      alert('DestinationId tidak valid.');
-    }
-  };
-  
-  
-  
-  const handleLamaKunjunganChange = (e) => {
-    const value = e.target.value;
-  
-    // Pastikan nilai yang dimasukkan adalah bilangan bulat positif
-    if (/^[1-9]\d*$/.test(value) || value === '') {
-      setFormData((prevData) => ({
-        ...prevData,
-        lama_kunjungan: Number(value),
-      }));
-    }
-    // Jika nilai yang dimasukkan tidak valid, Anda bisa memberikan feedback kepada pengguna atau mengambil tindakan lainnya.
-  };
   
 
 
@@ -178,25 +113,17 @@ const AddItinerary = () => {
     
     await getAvailableId();
 
-    const lama_kunjungan = Number(formData.lama_kunjungan);
-    if (!isNaN(lama_kunjungan)) {
-      setFormData((prevData) => ({
-        ...prevData,
-        lama_kunjungan: lama_kunjungan,
-        searchQuery: '',
-      }));
-    }
     try {
       const response = await axios.post(
-        'https://ayokebalitst.azurewebsites.net/itinerary',
+        'https://ayokebalitst.azurewebsites.net/destination',
         {
-          id: formData.id,
-          username: formData.username,
-          date: formData.date,
-          lama_kunjungan: formData.lama_kunjungan,
-          accommodation: formData.accommodation,
-          destination: formData.destination,
-          estimasi_budget: formData.estimasi_budget,
+          destination_id: formData.destination_id,
+          name: formData.name,
+          category: formData.category,
+          location: formData.location,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+          perkiraan_biaya: formData.perkiraan_biaya,
         },
         {
           headers: {
@@ -209,7 +136,7 @@ const AddItinerary = () => {
     } catch (error) {
       console.error('Error submitting itinerary:', error);
     }
-    window.location.href = '/itinerary';
+    window.location.href = '/home';
   };
 
   const SignOut = () => {
@@ -272,69 +199,78 @@ const AddItinerary = () => {
             </Box>
           ) : null}
         </Box>
-      <Heading mb={4} mt={4} >Buat Itinerary Baru</Heading>
+      <Heading mb={4} mt={4} >Buat Destinasi Baru</Heading>
       <Box mx={10}>
         <form onSubmit={handleSubmit} >
           <VStack align="start">
-            <FormControl id="date" isRequired>
-              <FormLabel>Tanggal</FormLabel>
+            <FormControl id="name" isRequired>
+              <FormLabel>Name</FormLabel>
               <Input
                 type="text"
-                name="date"
-                value={formData.date}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                placeholder="Format dalam DD-MM-YYYY"
+                placeholder="Nama Destinasi"
               />
             </FormControl>
 
-            <FormControl id="lama_kunjungan" isRequired>
-              <FormLabel>Lama Kunjungan (hari)</FormLabel>
+            <FormControl id="category" isRequired>
+              <FormLabel>Category</FormLabel>
+              <Input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                placeholder="Nama Kategori"
+              />
+            </FormControl>
+
+            <FormControl id="location" isRequired>
+              <FormLabel>Location</FormLabel>
+              <Input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                placeholder="Lokasi Destinasi"
+              />
+            </FormControl>
+
+            <FormControl id="latitude" isRequired>
+              <FormLabel>Latitude</FormLabel>
               <Input
                 type="number"
-                name="lama_kunjungan"
-                value={formData.lama_kunjungan}
-                onChange={handleLamaKunjunganChange}
-                placeholder="Format dalam integer positif (0,1,2,dst)"
+                name="latitude"
+                value={formData.latitude}
+                onChange={handleChange}
+                placeholder="Format dalam X.XXXX"
               />
             </FormControl>
 
-            <FormControl id="accommodation" isRequired>
-              <FormLabel>Akomodasi</FormLabel>
-              <Select name="accommodation" value={formData.accommodation} onChange={handleChange}>
-                <option value="3 star">3 Star</option>
-                <option value="4 star">4 Star</option>
-                <option value="5 star">5 Star</option>
-              </Select>
+            <FormControl id="longitude" isRequired>
+              <FormLabel>Longitude</FormLabel>
+              <Input
+                type="number"
+                name="longitude"
+                value={formData.longitude}
+                onChange={handleChange}
+                placeholder="Format dalam X.XXXX"
+              />
             </FormControl>
 
-            <FormControl id="destination">
-              <FormLabel>Destinasi</FormLabel>
-              <InputGroup>
-              <Select
-                name="searchQuery"
-                value={searchQuery}
-                onChange={handleDestinationChange}
-                placeholder="Pilih destinasi"
-              >
-                {destinationsList.map((destination) => (
-                  <option key={destination.destination_id} value={destination.destination_id}>
-                    {destination.name} ({destination.location})
-                  </option>
-                ))}
-              </Select>
-                <InputRightElement width="4.5rem">
-                  <Button bg="teal.200" h="1.75rem" size="sm" onClick={handleAddDestination}>
-                    Add
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <Text fontSize="sm" mt={1}>
-                Pilih destinasi dari daftar dan tekan "Add" untuk menambahkan ke itinerary.
-              </Text>
+            <FormControl id="perkiraan_biaya" isRequired>
+              <FormLabel>Perkiraan Biaya</FormLabel>
+              <Input
+                type="number"
+                name="perkiraan_biaya"
+                value={formData.perkiraan_biaya}
+                onChange={handleChange}
+                placeholder="Format dalam Rupiah"
+              />
             </FormControl>
 
             <Button type="submit" bg="teal.200" mt={4} mx="auto">
-              Buat
+              Tambah
             </Button>
           </VStack>
         </form>
@@ -343,4 +279,4 @@ const AddItinerary = () => {
   );
 };
 
-export default AddItinerary;
+export default AddDestination;

@@ -10,6 +10,8 @@ import Itinerary from './Itinerary';
 import CreateItinerary from './CreateItinerary';
 import LoanForm from './LoanForm';
 import LoanResult from './LoanResult';
+import AddDestination from './AddDestination';
+import EditDestination from './EditDestination';
 
 const PrivateRoute = ({ element }) => {
   const token1 = sessionStorage.getItem('token1');
@@ -17,6 +19,23 @@ const PrivateRoute = ({ element }) => {
 
   // Redirect to sign-in if tokens are not present
   if (token1 === '' && token2 === '') {
+    return <Navigate to="/" />;
+  }
+
+  // Render the protected component if tokens are present
+  return element;
+};
+
+const AdminRoute = ({ element }) => {
+  const token1 = sessionStorage.getItem('token1');
+  const token2 = sessionStorage.getItem('token2');
+  const username = sessionStorage.getItem('username');
+  // Redirect to sign-in if tokens are not present
+  if (token1 === '' && token2 === '') {
+      return <Navigate to="/" />;
+  }
+
+  if (username !== 'Admin123'){
     return <Navigate to="/" />;
   }
 
@@ -56,9 +75,17 @@ const App = () => {
               path="/loan"
               element={<PrivateRoute element={<LoanResult />} />}
             />
+            <Route
+              path="/add-destination"
+              element={<AdminRoute element={<AddDestination />} />}
+            />
+            <Route
+              path="/edit-destination/:id"
+              element={<AdminRoute element={<EditDestination />} />}
+            />
             <Route path="/" element={<SignIn />} />
             <Route path="/register" element={<Register />} />
-            
+
             </Routes>
           </Fragment>
         </Router>

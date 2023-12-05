@@ -175,6 +175,22 @@ const Home = () => {
       });
   };
 
+  const handleDeleteDestination = async (destination_id) => {
+    try {
+      // Panggil API untuk melakukan penghapusan
+      await axios.delete(`https://ayokebalitst.azurewebsites.net/destination/${destination_id}`,{
+        headers: {
+          Authorization: `Bearer ${token1}` // Menyertakan token dalam header Authorization
+        }
+      });
+  
+      resetData()
+      alert(`Destination berhasil dihapus`);
+    } catch (error) {
+      console.error('Error deleting itinerary:', error);
+    }
+  };
+
   const SignOut = () => {
     sessionStorage.setItem('token1', '');
     sessionStorage.setItem('token2', '');
@@ -251,6 +267,13 @@ const Home = () => {
             <Heading fontSize={'4xl'} mb={4} mt={4}>
               Rekomendasi Destinasi
             </Heading>
+            {username === 'Admin123' ? (
+              <Box>
+                <Button bg={'green.400'} color={'white'} as={Link} to={`/add-destination`} mr={4} mt={2} mb={4}>
+                  Add Destination
+                </Button>
+              </Box>
+            ): null}
             <HStack mt={4} spacing={4} align={'center'} justify={'center'}>
               {getRandomCategories().map((category) => (
                 <Button bg={'teal.200'} key={category} onClick={() => handleCategoryFilterChange(category)}>
@@ -307,9 +330,23 @@ const Home = () => {
                     </CardHeader>
                     <CardBody>{destination.location}</CardBody>
                     <CardFooter align={'center'} justify={'center'}>
-                      <Button bg={'teal.200'} as={Link} to={`/destination/${destination.destination_id}`}>
-                        View Details
-                      </Button>
+                      
+                      <Flex alignItems={'center'} justifyContent={'space-between'}>
+                        <Button bg={'teal.200'} px={4} mr={2} as={Link} to={`/destination/${destination.destination_id}`}>
+                          View Details
+                        </Button>
+                        {username === 'Admin123' ? (
+                          <Button bg={'gray.400'} px={4} mr={2} as={Link} to={`/edit-destination/${destination.destination_id}`}>
+                            Edit
+                          </Button>
+                        ): null}
+                        {username === 'Admin123' ? (
+                          <Button colorScheme="red" px={4} onClick={() => handleDeleteDestination(destination.destination_id)}>
+                            Delete
+                          </Button>
+                        ): null}
+                        
+                      </Flex>
                     </CardFooter>
                   </Card>
                 ))}
