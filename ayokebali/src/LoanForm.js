@@ -127,7 +127,7 @@ const LoanForm = () => {
         } catch (error) {
           console.error('Error submitting customer:', error);
         }
-        // window.location.href = '/loan';
+        window.location.href = '/loan';
       };
 
       const SignOut = () => {
