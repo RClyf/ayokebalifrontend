@@ -74,7 +74,10 @@ const LoanForm = () => {
       const getAvailableId = async () => {
         const randomId = generateRandomId();
     
-        handleInputChange("Customer_ID", randomId)
+        setFormData((prevData) => ({
+          ...prevData,
+          Customer_ID: randomId,
+      }));
       };
 
 
@@ -97,6 +100,8 @@ const LoanForm = () => {
         e.preventDefault();
         
         await getAvailableId();
+
+        console.log(formData)
 
         try {
           const response = await axios.post(
@@ -122,7 +127,7 @@ const LoanForm = () => {
         } catch (error) {
           console.error('Error submitting customer:', error);
         }
-        window.location.href = '/loan';
+        // window.location.href = '/loan';
       };
 
       const SignOut = () => {

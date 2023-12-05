@@ -43,7 +43,7 @@ const AddItinerary = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [formData, setFormData] = useState({
-      id: '',
+      id: 0,
       username: username,
       date: '',
       lama_kunjungan: '',
