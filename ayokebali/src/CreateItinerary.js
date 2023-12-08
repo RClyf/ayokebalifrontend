@@ -173,7 +173,7 @@ const AddItinerary = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const randomId = getAvailableId();
+    const randomId = await getAvailableId();
 
     const lama_kunjungan = Number(formData.lama_kunjungan);
     if (!isNaN(lama_kunjungan)) {
