@@ -83,7 +83,7 @@ const AddItinerary = () => {
   
         if (idAvailable) {
           setFormData((prevData) => ({
-            id: Number(randomId),
+            id: randomId,
             ...prevData,
           }));
           return;
@@ -178,6 +178,8 @@ const AddItinerary = () => {
     
     await getAvailableId();
 
+    console.log(formData);
+
     const lama_kunjungan = Number(formData.lama_kunjungan);
     if (!isNaN(lama_kunjungan)) {
       setFormData((prevData) => ({
@@ -209,7 +211,7 @@ const AddItinerary = () => {
     } catch (error) {
       console.error('Error submitting itinerary:', error);
     }
-    window.location.href = '/itinerary';
+    // window.location.href = '/itinerary';
   };
 
   const SignOut = () => {
