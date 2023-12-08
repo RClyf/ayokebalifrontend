@@ -82,11 +82,8 @@ const AddItinerary = () => {
         const idAvailable = await isIdAvailable(randomId);
   
         if (idAvailable) {
-          setFormData((prevData) => ({
-            id: randomId,
-            ...prevData,
-          }));
-          return;
+          
+          return randomId;
         }
       }
   
@@ -176,9 +173,7 @@ const AddItinerary = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    await getAvailableId();
-
-    console.log(formData);
+    const randomId = getAvailableId();
 
     const lama_kunjungan = Number(formData.lama_kunjungan);
     if (!isNaN(lama_kunjungan)) {
@@ -192,7 +187,7 @@ const AddItinerary = () => {
       const response = await axios.post(
         'https://ayokebalitst.azurewebsites.net/itinerary',
         {
-          id: formData.id,
+          id: randomId,
           username: formData.username,
           date: formData.date,
           lama_kunjungan: formData.lama_kunjungan,
@@ -211,7 +206,7 @@ const AddItinerary = () => {
     } catch (error) {
       console.error('Error submitting itinerary:', error);
     }
-    // window.location.href = '/itinerary';
+    window.location.href = '/itinerary';
   };
 
   const SignOut = () => {
