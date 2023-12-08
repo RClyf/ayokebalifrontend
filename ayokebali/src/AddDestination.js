@@ -83,7 +83,7 @@ const AddDestination = () => {
   
         if (idAvailable) {
           setFormData((prevData) => ({
-            destination_id: Number(randomId),
+            destination_id: randomId,
             ...prevData,
           }));
           return;
@@ -113,6 +113,8 @@ const AddDestination = () => {
     
     await getAvailableId();
 
+    console.log(formData)
+
     try {
       const response = await axios.post(
         'https://ayokebalitst.azurewebsites.net/destination',
@@ -136,7 +138,7 @@ const AddDestination = () => {
     } catch (error) {
       console.error('Error submitting itinerary:', error);
     }
-    window.location.href = '/home';
+    // window.location.href = '/home';
   };
 
   const SignOut = () => {
